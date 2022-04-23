@@ -13,8 +13,14 @@ int main()
 {
     const int WIDTH = 800;
     const int HEIGHT = 800;
-    const int NUM = 100;
+    const int NUM = 200;
     const int SIZE = 10;
+
+    bool drawLocalConnections = true;
+    bool drawDirection = true;
+    bool drawAlignment = true;
+    bool drawSeparation = true;
+    bool drawCohesion = true;
 
     int fps;
     sf::Text text;
@@ -48,21 +54,27 @@ int main()
         {
             if (event.type == sf::Event::Closed){
                 window.close();
+            } else if (event.type == sf::Event::KeyPressed){
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){ drawSeparation = !drawSeparation; }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)){ drawCohesion = !drawCohesion; }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){ drawAlignment = !drawAlignment; }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){ drawDirection = !drawDirection; }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){ drawLocalConnections = !drawLocalConnections; }
             }
         }
         window.clear();
         for (auto& b : boids){
-            b.getLocalBoids(boids);
+            b.getLocalBoids(window, boids, drawLocalConnections);
         }
 
         for (auto& b : boids){
             
-            b.separation(window);
-            b.alignment(window);
-            b.cohesion(window);
+            b.separation(window, drawSeparation);
+            b.alignment(window, drawAlignment);
+            b.cohesion(window, drawCohesion);
             b.getNewDirection();
             b.move(WIDTH, HEIGHT);
-            b.draw(window, SIZE);
+            b.draw(window, SIZE, drawDirection);
         }
 
         window.draw(text);

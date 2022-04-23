@@ -26,16 +26,15 @@ void Boid::printPos(){
     std::cout<<"("<<this->pos.first<<", "<<this->pos.second<<")\n";
 }
 
-void Boid::draw(sf::RenderWindow& window, const int& SIZE){
+void Boid::draw(sf::RenderWindow& window, const int& SIZE, bool& d){
     sf::CircleShape shape(SIZE);
     shape.setFillColor(this->bColour);
     shape.setPosition(sf::Vector2f(this->pos.first - (SIZE), this->pos.second - (SIZE)));
     window.draw(shape);
-    this->drawDir(window);
-    this->connectLocal(window);
+    if (d) { this->drawDir(window); }
 }
 
-void Boid::getLocalBoids(std::vector<Boid>& boids){
+void Boid::getLocalBoids(sf::RenderWindow& window, std::vector<Boid>& boids, bool& d){
     if (this->localBoids.size() > 0) { this->localBoids.clear(); }
     //std::cout<<this->localBoids.size()<<'\n';
     int i = -1;
@@ -47,12 +46,13 @@ void Boid::getLocalBoids(std::vector<Boid>& boids){
             }
         }
     }
+    if(d) { this->connectLocal(window); }
     //std::cout<<this->localBoids.size()<<'\n';
 }
 
 //Steer to avoid crowding local boids
 //Take average vector to all nearby boids and take opposite vector
-void Boid::separation(sf::RenderWindow& window){
+void Boid::separation(sf::RenderWindow& window, bool& d){
     if (this->localBoids.size() > 0){
         this->s_vec.first = 0;
         this->s_vec.second = 0;
@@ -72,14 +72,15 @@ void Boid::separation(sf::RenderWindow& window){
         //std::cout<<"x: "<<this->s_vec.first<<"  y: "<<this->s_vec.second<<"  size: "<<this->localBoids.size()<<'\n';
 
         
-        
-        sf::Vertex line[] =
-        {
-            sf::Vertex(sf::Vector2f(this->pos.first, this->pos.second), sf::Color::Magenta),
-            sf::Vertex(sf::Vector2f(this->pos.first + this->s_vec.first, this->pos.second + this->s_vec.second), sf::Color::Magenta)
-        };
+        if(d) {
+            sf::Vertex line[] =
+            {
+                sf::Vertex(sf::Vector2f(this->pos.first, this->pos.second), sf::Color::Magenta),
+                sf::Vertex(sf::Vector2f(this->pos.first + this->s_vec.first, this->pos.second + this->s_vec.second), sf::Color::Magenta)
+            };
 
-        window.draw(line, 2, sf::Lines);
+            window.draw(line, 2, sf::Lines);
+        }
 
         this->s_vec.first *= this->S_MULT;
         this->s_vec.second *= this->S_MULT;
@@ -88,7 +89,7 @@ void Boid::separation(sf::RenderWindow& window){
 
 //Steer towards the average heading of local boids
 //Take average vector of direction of all nearby boids
-void Boid::alignment(sf::RenderWindow& window){
+void Boid::alignment(sf::RenderWindow& window, bool& d){
     if (this->localBoids.size() > 0){
         this->a_vec.first = 0;
         this->a_vec.second = 0;
@@ -101,13 +102,15 @@ void Boid::alignment(sf::RenderWindow& window){
         this->a_vec.first = (int)this->a_vec.first / (int)this->localBoids.size();
         this->a_vec.second = (int)this->a_vec.second / (int)this->localBoids.size();
         
-        sf::Vertex line[] =
-        {
-            sf::Vertex(sf::Vector2f(this->pos.first, this->pos.second), sf::Color::Green),
-            sf::Vertex(sf::Vector2f(this->pos.first + this->a_vec.first, this->pos.second + this->a_vec.second), sf::Color::Green)
-        };
+        if(d) {
+            sf::Vertex line[] =
+            {
+                sf::Vertex(sf::Vector2f(this->pos.first, this->pos.second), sf::Color::Green),
+                sf::Vertex(sf::Vector2f(this->pos.first + this->a_vec.first, this->pos.second + this->a_vec.second), sf::Color::Green)
+            };
 
-        window.draw(line, 2, sf::Lines);
+            window.draw(line, 2, sf::Lines);
+        }
 
         this->a_vec.first *= this->A_MULT;
         this->a_vec.second *= this->A_MULT;
@@ -116,44 +119,32 @@ void Boid::alignment(sf::RenderWindow& window){
 
 //Steer to move towards the average position of local boids
 //Take vector to average position of all nearby boids
-void Boid::cohesion(sf::RenderWindow& window){
+void Boid::cohesion(sf::RenderWindow& window, bool& d){
     if (this->localBoids.size() > 0){
         this->c_vec.first = 0;
-        this->c_vec.second = 0;
-
-        //std::vector<std::pair<int, int>> s = {{100, 100}, {200, 200}, {150, 150}};
-        
+        this->c_vec.second = 0;   
         
         for (auto& b : this->localBoids){
             this->c_vec.first += b.get().pos.first;
             this->c_vec.second += b.get().pos.second;
         }
-        
-       /*
-       for (auto& b : s){
-           this->c_vec.first += b.first;
-            this->c_vec.second += b.second;
-       }
-       */
 
         this->c_vec.first = this->c_vec.first / this->localBoids.size();
         this->c_vec.second = this->c_vec.second / this->localBoids.size();
-
-        //this->c_vec.first = this->c_vec.first / s.size();
-        //this->c_vec.second = this->c_vec.second / s.size();
 
         this->c_vec.first -= this->pos.first;
         this->c_vec.second -= this->pos.second;
 
         
+        if(d) {
+            sf::Vertex line[] =
+            {
+                sf::Vertex(sf::Vector2f(this->pos.first, this->pos.second), sf::Color::Cyan),
+                sf::Vertex(sf::Vector2f(this->pos.first + this->c_vec.first, this->pos.second + this->c_vec.second), sf::Color::Cyan)
+            };
 
-        sf::Vertex line[] =
-        {
-            sf::Vertex(sf::Vector2f(this->pos.first, this->pos.second), sf::Color::Cyan),
-            sf::Vertex(sf::Vector2f(this->pos.first + this->c_vec.first, this->pos.second + this->c_vec.second), sf::Color::Cyan)
-        };
-
-        window.draw(line, 2, sf::Lines);
+            window.draw(line, 2, sf::Lines);
+        }
 
         this->c_vec.first *= this->C_MULT;
         this->c_vec.second *= this->C_MULT;
@@ -182,16 +173,34 @@ void Boid::getNewDirection(){
         this->dir.second = (this->dir.second + avg.second);
     }
     limit(this->dir, this->MAX_VEL);
+
+    if(this->ADD_RANDOM){
+        std::random_device dev;
+        std::mt19937 rng(dev());
+        std::uniform_int_distribution<std::mt19937::result_type> r(-5,5);
+        this->dir.first += r(rng);
+        this->dir.second += r(rng);
+    }
     //std::cout<<this->dir.first<<", "<<this->dir.second<<'\n';
 }
 
 void Boid::move(const int& WIDTH, const int& HEIGHT){
     this->pos.first += std::ceil((float)this->dir.first * 0.1);
     this->pos.second += std::ceil((float)this->dir.second * 0.1);
+
+    /*
     if (this->pos.first > WIDTH + this->size){ this->pos.first = -this->size; }
     if (this->pos.first < -this->size){ this->pos.first = WIDTH + this->size; }
     if (this->pos.second > HEIGHT + this->size){ this->pos.second = -this->size; }
     if (this->pos.second < -this->size){ this->pos.second = HEIGHT + this->size; }
+    */
+    if ((this->pos.first > WIDTH) || (this->pos.first < 0)){ this->dir.first *= -1; }
+    if ((this->pos.second > HEIGHT) || (this->pos.second < 0)){ this->dir.second *= -1; }
+    if (this->pos.first > WIDTH + this->size){ this->pos.first = WIDTH; }
+    if (this->pos.first < -this->size){ this->pos.first = 0; }
+    if (this->pos.second > HEIGHT + this->size){ this->pos.second = 0; }
+    if (this->pos.second < -this->size){ this->pos.second = HEIGHT; }
+
 }
 
 //Private Functions

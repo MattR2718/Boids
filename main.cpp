@@ -35,7 +35,6 @@ int main()
     std::vector<Boid> boids;
     for (int i = 0; i < NUM; i++){
         Boid temp(WIDTH, HEIGHT, SIZE);
-        //temp.printPos();
         boids.push_back(temp);
     }
 
@@ -46,7 +45,6 @@ int main()
         current_time = fps_clock.getElapsedTime();
 		fps = int(1.f / (current_time.asSeconds() - previous_time.asSeconds()));
         text.setString(std::to_string(fps));
-		//std::cout << fps << '\n';
 		previous_time = current_time;
 
         sf::Event event;
@@ -79,7 +77,5 @@ int main()
 
         window.draw(text);
         window.display();
-        char h;
-        //std::cin >> h;
     }
 }

@@ -36,7 +36,6 @@ void Boid::draw(sf::RenderWindow& window, const int& SIZE, bool& d){
 
 void Boid::getLocalBoids(sf::RenderWindow& window, std::vector<Boid>& boids, bool& d){
     if (this->localBoids.size() > 0) { this->localBoids.clear(); }
-    //std::cout<<this->localBoids.size()<<'\n';
     int i = -1;
     for (auto& b : boids){
         if ((this->pos != b.pos)){
@@ -47,7 +46,6 @@ void Boid::getLocalBoids(sf::RenderWindow& window, std::vector<Boid>& boids, boo
         }
     }
     if(d) { this->connectLocal(window); }
-    //std::cout<<this->localBoids.size()<<'\n';
 }
 
 //Steer to avoid crowding local boids
@@ -62,15 +60,11 @@ void Boid::separation(sf::RenderWindow& window, bool& d){
             this->s_vec.second += (b.get().pos.second - this->pos.second);
         }
         
-        
         this->s_vec.first = (int)this->s_vec.first / (int)this->localBoids.size();
         this->s_vec.second = (int)this->s_vec.second / (int)this->localBoids.size();
         
         this->s_vec.first *= -1;
         this->s_vec.second *= -1;
-
-        //std::cout<<"x: "<<this->s_vec.first<<"  y: "<<this->s_vec.second<<"  size: "<<this->localBoids.size()<<'\n';
-
         
         if(d) {
             sf::Vertex line[] =
@@ -135,7 +129,6 @@ void Boid::cohesion(sf::RenderWindow& window, bool& d){
         this->c_vec.first -= this->pos.first;
         this->c_vec.second -= this->pos.second;
 
-        
         if(d) {
             sf::Vertex line[] =
             {
@@ -181,19 +174,12 @@ void Boid::getNewDirection(){
         this->dir.first += r(rng);
         this->dir.second += r(rng);
     }
-    //std::cout<<this->dir.first<<", "<<this->dir.second<<'\n';
 }
 
 void Boid::move(const int& WIDTH, const int& HEIGHT){
     this->pos.first += std::ceil((float)this->dir.first * 0.1);
     this->pos.second += std::ceil((float)this->dir.second * 0.1);
 
-    /*
-    if (this->pos.first > WIDTH + this->size){ this->pos.first = -this->size; }
-    if (this->pos.first < -this->size){ this->pos.first = WIDTH + this->size; }
-    if (this->pos.second > HEIGHT + this->size){ this->pos.second = -this->size; }
-    if (this->pos.second < -this->size){ this->pos.second = HEIGHT + this->size; }
-    */
     if ((this->pos.first > WIDTH) || (this->pos.first < 0)){ this->dir.first *= -1; }
     if ((this->pos.second > HEIGHT) || (this->pos.second < 0)){ this->dir.second *= -1; }
     if (this->pos.first > WIDTH + this->size){ this->pos.first = WIDTH; }
@@ -219,9 +205,6 @@ float Boid::dist(Boid& b){
     float x = (float)this->pos.first - b.pos.first;
     float y = (float) this->pos.second - b.pos.second;
     float dist = (x * x) + (y * y);
-    //dist = sqrt(3.0);
-    //int f = (dist < 3.0) ? 1 : 0;
-    //std::cout<<"X: "<<x<<"  Y: "<<y<<"  DIST: "<<dist<<"  T/F: "<<f<<"\n";
     return dist;
 }
 

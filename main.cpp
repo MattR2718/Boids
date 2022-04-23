@@ -13,8 +13,11 @@ int main()
 {
     const int WIDTH = 800;
     const int HEIGHT = 800;
-    const int NUM = 50;
+    const int NUM = 100;
     const int SIZE = 10;
+
+    Boid t(WIDTH, HEIGHT);
+    std::cout<<sizeof(t)<<'\n';
 
     int fps;
     sf::Text text;
@@ -54,11 +57,11 @@ int main()
         
         for (auto& b : boids){
             b.getLocalBoids(boids);
-            //b.separation();
-            //b.alignment();
-            //b.cohesion();
-            //b.getNewDirection();
-            //b.move();
+            b.separation(window);
+            b.alignment();
+            b.cohesion();
+            b.getNewDirection();
+            b.move();
             b.draw(window, SIZE);
         }
 

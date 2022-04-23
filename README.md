@@ -10,6 +10,6 @@
 
 #### Images
 <p float="left">
-    <img src="https://github.com/MattR2718/Boids/blob/main/imgs/boids.png" width="400" height="400"/>
-    <img src="https://github.com/MattR2718/Boids/blob/main/imgs/boids2.png" width="400" height="400"/>
+    <img src="https://github.com/MattR2718/Boids/blob/master/imgs/boids.png" width="400" height="400"/>
+    <img src="https://github.com/MattR2718/Boids/blob/master/imgs/boids2.png" width="400" height="400"/>
 </p>

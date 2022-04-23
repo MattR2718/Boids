@@ -16,9 +16,6 @@ int main()
     const int NUM = 100;
     const int SIZE = 10;
 
-    Boid t(WIDTH, HEIGHT);
-    std::cout<<sizeof(t)<<'\n';
-
     int fps;
     sf::Text text;
     sf::Font font;
@@ -31,13 +28,13 @@ int main()
     
     std::vector<Boid> boids;
     for (int i = 0; i < NUM; i++){
-        Boid temp(WIDTH, HEIGHT);
+        Boid temp(WIDTH, HEIGHT, SIZE);
         //temp.printPos();
         boids.push_back(temp);
     }
 
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "BOIDS");
-    window.setFramerateLimit(30);
+    window.setFramerateLimit(60);
     while (window.isOpen())
     {
         current_time = fps_clock.getElapsedTime();
@@ -54,18 +51,23 @@ int main()
             }
         }
         window.clear();
-        
         for (auto& b : boids){
             b.getLocalBoids(boids);
+        }
+
+        for (auto& b : boids){
+            
             b.separation(window);
-            b.alignment();
-            b.cohesion();
+            b.alignment(window);
+            b.cohesion(window);
             b.getNewDirection();
-            b.move();
+            b.move(WIDTH, HEIGHT);
             b.draw(window, SIZE);
         }
 
         window.draw(text);
         window.display();
+        char h;
+        //std::cin >> h;
     }
 }
